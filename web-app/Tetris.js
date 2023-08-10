@@ -471,12 +471,16 @@ Tetris.rotate_ccw = function (game) {
     return R.mergeRight(game, {"current_tetromino": new_rotation});
 };
 
-const descend = function (game) {
+const descend = function (game, points) {
+
+    if (!points) {
+        points = 0;
+    }
     const new_position = [game.position[0], game.position[1] + 1];
     if (is_blocked(game.field, game.current_tetromino, new_position)) {
         return game;
     }
-    return R.mergeRight(game, {"position": new_position});
+    return R.mergeRight(game, {"position": new_position, "score": Score.add_points(points, game.score)});
 };
 
 /**
@@ -492,7 +496,7 @@ Tetris.soft_drop = function (game) {
     if (Tetris.is_game_over(game)) {
         return game;
     }
-    return descend(game);
+    return descend(game, 1);
 };
 
 /**
@@ -509,7 +513,7 @@ Tetris.hard_drop = function (game) {
     if (Tetris.is_game_over(game)) {
         return game;
     }
-    const dropped_once = descend(game);
+    const dropped_once = descend(game, 2);
     if (R.equals(game, dropped_once)) {
         return Tetris.next_turn(game);
     }
@@ -582,6 +586,9 @@ Tetris.next_turn = function (game) {
     // Otherwise, we can't descend and we've not lost,
     // So lock the current piece in place and deploy the next.
     const locked_field = lock(game);
+
+    const numOfLines = R.count(is_complete_line, locked_field)
+    game.score = Score.cleared_lines(numOfLines, game.score);
 
     const cleared_field = clear_lines(locked_field);
 

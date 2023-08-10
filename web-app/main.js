@@ -72,7 +72,9 @@ const update_grid = function () {
     );
 
     // Add code below to display the score information.
-
+    document.getElementById("score").innerText = game.score.score;
+    document.getElementById("cleared_lines").innerText = game.score.lines_cleared;
+    document.getElementById("level").innerText = Score.level(game.score);
 };
 
 // Don't allow the player to hold down the rotate key.
@@ -105,7 +107,8 @@ document.body.onkeydown = function (event) {
 const timer_function = function () {
     game = Tetris.next_turn(game);
     update_grid();
-    setTimeout(timer_function, 500);
+    const level = Score.level(game.score);
+    setTimeout(timer_function, 2500 / (level + 4));
 };
 
 // This first timeout starts the game. it's only called once.
