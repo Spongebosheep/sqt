@@ -18,10 +18,10 @@ const Score = {};
  */
 
 /**
- * Returns a game state for a new Tetris Game.
+ * To generate a new score object before the game starts.
  * @function
  * @memberof Score
- * @returns {Score.Score} The new game.
+ * @returns {Score.Score} The new game score object.
  */
 Score.new_score = function () {
     return {
@@ -41,22 +41,31 @@ Score.level = function (score) {
     return Math.floor(score.lines_cleared / 10) + 1;
 };
 
+/**
+ * Create a new `Score` with additional lines cleared and the score updated
+ * @function
+ * @memberof Score
+ * @param {number} numOfLines The total number of lines cleared.
+ * @param {Score.Score} score The game score.
+ * @returns {Score.Score} The new game score object.
+ */
 Score.cleared_lines = function(numOfLines, score) {
-    let newScore = score.score;
     let newLinesCleared = score.lines_cleared + numOfLines;
+    let currentScore = 0;
     if (numOfLines === 1) {
-        newScore += 100;
+        currentScore = 100;
     } else if (numOfLines === 2) {
-        newScore += 300;
+        currentScore = 300;
     } else if (numOfLines === 3) {
-        newScore += 500;
+        currentScore = 500;
     } else if (numOfLines === 4) {
         if (score.last_cleared_tetris) {
-            newScore += 1200;
+            currentScore = 1200;
         } else {
-            newScore += 800;
+            currentScore = 800;
         }
     }
+    let newScore = score.score + currentScore * Score.level(score);
     return {
         score: newScore,
         lines_cleared: newLinesCleared,
@@ -64,6 +73,14 @@ Score.cleared_lines = function(numOfLines, score) {
     };
 }
 
+/**
+ * Add a given number of points to a given score
+ * @function
+ * @memberof Score
+ * @param {number} points The added points.
+ * @param {Score.Score} score The game score.
+ * @returns {Score.Score} The new game score object.
+ */
 Score.add_points = function(points, score) {
     const newScore = score.score + points;
     return {
